@@ -1,0 +1,6 @@
+{
+  "name": "Summary Master Extension",
+  "description": "This is an extension used to summarize webpages for visually impaired",
+  "version": "1.0",
+  "manifest_version": 3
+}
