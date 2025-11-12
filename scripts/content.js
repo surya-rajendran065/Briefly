@@ -21,6 +21,13 @@ async function summarizeContent() {
 // Converts given text to speech
 function textToSpeech(givenText) {
     const utterance = new SpeechSynthesisUtterance(givenText);
+    utterance.text = "Starting Webpage Summary";
+    utterance.voice = voices[2];
+    console.log(voices[2]);
+
+    
+    window.speechSynthesis.speak(utterance)
+    utterance.text = givenText;
     window.speechSynthesis.speak(utterance);
 }
 
@@ -31,6 +38,8 @@ function stopScreenreader() {
     screenReaderActive = false;
 }
 
+
+
 // Summarized Content
 let summarizedContent = "";
 
@@ -40,9 +49,18 @@ let timesControlPressed = 0;
 // Boolean tells if screen reader is active or not
 let screenReaderActive = false;
 
+let voices = [];
+
+// Waits for async function to be finished and then assign it's result to a variable
 summarizeContent().then((result) => {
     summarizedContent = result;
+    console.log(result);
 });
+
+// Gets all voices and puts them into an array
+window.speechSynthesis.onvoiceschanged = () => {
+    voices = window.speechSynthesis.getVoices();
+}
 
 document.addEventListener("keydown", (event) => {
     
@@ -65,6 +83,4 @@ document.addEventListener("keydown", (event) => {
     }
 
     console.log(timesControlPressed, screenReaderActive, event.key); // Debugging
-
-
 })
