@@ -2,36 +2,63 @@
 // Listents to keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
 
+
+    let summarizedContent = "Hello there!";
+
     // When user presses Ctrl+B
     if (command === 'summarize-page') {
 
         // Summarized content created from AI
-        let summarizedContent = "Hello there!";
+        
 
         // Fetches summarization from server
         async function summarizeContent() {
-            const response = await fetch('https://summarizer-api-seven.vercel.app/', {
+            const response = await fetch('https://summary-chrome-extension-backend.onrender.com/', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ input: document.body.innerText })
+                body: JSON.stringify(document.body.innerText)
             })
 
             const data = await response.json();
             
             summarizedContent = data.summary;
+            console.log(data.summary);
+            return data.summary;
         }
 
        
         let tab = await getCurrentTab();
         
+        summarizeContent();
+
+        // getCnt.then((result) => {
+        //     chrome.scripting.executeScript({
+        //     target: {tabId: tab.id},
+        //     func: () => {console.log(result)}
+        //     })
+        // })
+        
+        // Prints message alerting that Ctrl+B has been pressed
+        chrome.scripting.executeScript({
+            target: {tabId: tab.id},
+            func: () => {console.log("Pressed Ctrl+B")}
+        })
+
+        chrome.scripting.executeScript({
+            target: {tabId: tab.id},
+            func: summarizeContent
+        })
+
         // Executes text-to-speech function
         chrome.scripting.executeScript({
             target: {tabId: tab.id},
             func: textToSpeech,
             args: ["Hello World"]
         })
+
+
      
     }
 })
