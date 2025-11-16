@@ -30,7 +30,7 @@ chrome.commands.onCommand.addListener(async (command) => {
         chrome.scripting.executeScript({
             target: {tabId: tab.id},
             func: textToSpeech,
-            args: [summarizedContent]
+            args: ["Hello World"]
         })
      
     }
