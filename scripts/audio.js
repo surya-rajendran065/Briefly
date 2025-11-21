@@ -1,91 +1,96 @@
-// Stores audio data in individual chunks for efficiency
-const audioChunks = [];
-
+// Sound effects
 let startEffect = new Audio(chrome.runtime.getURL("audio/Start.mp3"));
 let stopEffect = new Audio(chrome.runtime.getURL("audio/Stop.mp3"));
 
-// Media Recorder object that listens for audio from user's mic
-let mediaRecorder;
+// Undefined Variables
+let noResponse;
+let speechToTextResult;
+let sentences;
+let endAgent = false;
+const recogniton = createRecognition();
 
 // Reduces the need to type 'navigator.mediaDevices.getUserMedia()' each time
 const getUserMedia = navigator.mediaDevices.getUserMedia.bind(
     navigator.mediaDevices
 );
 
-// Sound effects to indicate AI Agent
+// Creates a SpeechRecogniton Object
+function createRecognition() {
+    const rec = new window.SpeechRecognition();
+    rec.language = "en-US";
+    rec.continuous = true;
+    rec.interimResults = true;
+    return rec;
+}
+
+// Waits for a sepcified amount of time
+async function Sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Sound effect to indicate AI Agent has started listening
 function playStartEffect() {
     startEffect.play();
 }
 
-// Plays the sound effect indicating the AI won't listen to more audio
+// Plays the sound effect indicating the AI has stopped listening
 function playStopEffect() {
     stopEffect.play();
 }
 
 // Played after user holds f2 for 1 second
 async function startAIAgent() {
+    endAgent = false;
     playStartEffect();
-    setTimeout(() => {
-        textToSpeech("Hello, I am your AI Agent, how can I help you?");
+    await Sleep(500);
+    let intro = textToSpeech("Hello, I am your AI Agent, how can I help you?");
 
-        recordingStartTime = new Date().getSeconds();
-
-        if (new Date().getSeconds() - recordingStartTime == 10) {
-            stopAIAgentSound();
+    // Waits for screenreader to finish before taking in input
+    intro.onend = () => {
+        if (!endAgent) {
+            recogniton.start();
         }
-    }, 500);
+    };
+
+    // If the user says nothing, it will stop the listening
+    noResponse = setTimeout(stopAIAgentSound, 10000);
+
+    return sentences;
 }
 
 // Played when AI Agent is cancelled and the user doesn't produce any noise
 function stopAIAgentSound() {
+    endAgent = true;
     playStopEffect();
     textToSpeech("Exiting AI Agent");
+
+    recogniton.stop();
 }
 
-// Stores data in array to be processed later
-function handleAudioData(data) {
-    console.log(data);
-    audioChunks.push(data);
+//
+function afterSpeech() {
+    endAgent = true;
+    recogniton.stop();
+    textToSpeech("Thank you");
+    console.log(sentences);
 }
 
-// Listens for audio from user's microphone
-async function getMediaRecorder() {
-    console.log("Starting Recording...");
+recogniton.addEventListener("result", (event) => {
+    speechToTextResult = event.results;
+    clearTimeout(noResponse);
+    const text = Array.from(speechToTextResult)
+        .map((result) => result[0])
+        .map((result) => result.transcript)
+        .join("\n");
+    sentences = text.split("\n");
+    console.log(text);
+});
 
-    const options = { audio: true };
+recogniton.addEventListener("speechstart", () => {
+    console.log("Started speaking");
+    setTimeout(afterSpeech, 10000);
+});
 
-    const audioInput = await getUserMedia(options);
-
-    const audioStream = await audioInput;
-
-    const localMedia = new MediaRecorder(audioStream);
-
-    return localMedia;
-}
-
-getMediaRecorder().then((result) => {
-    // Sets mediaRecorder to the reuslting MediaRecorder object
-    mediaRecorder = result;
-
-    mediaRecorder.start(1000);
-
-    mediaRecorder.ondataavailable = (event) => {
-        console.log(event.data);
-        audioChunks.push(event.data);
-    };
-
-    // Wait 5 sec before stopping
-    setTimeout(() => {
-        mediaRecorder.stop();
-        setTimeout(() => {
-            const finishedBlob = new Blob(audioChunks, {
-                type: "audio/webm;codecs=opus",
-            });
-            console.log(finishedBlob);
-            // const finishedAudio = new Audio(finishedBlob);
-            // const urlData = URL.createObjectURL(finishedAudio);
-            // console.log(mediaRecorder);
-            // console.log(urlData);
-        }, 1000);
-    }, 5000);
+recogniton.addEventListener("speechend", () => {
+    console.log("Finished speaking :)");
 });

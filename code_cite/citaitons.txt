@@ -1,0 +1,5 @@
+https://www.geeksforgeeks.org/javascript/how-to-wait-n-seconds-in-javascript/
+Sleep() Function
+
+https://www.youtube.com/watch?v=0mJC0A72Fnw
+Turn audio from mic into large string to process

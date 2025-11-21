@@ -28,6 +28,7 @@
         {
             "js": [
                 "scripts/screenReader.js",
+                "scripts/classes/Agent.js",
                 "scripts/audio.js",
                 "scripts/summarize.js",
                 "scripts/content.js"

@@ -15,6 +15,8 @@ function textToSpeech(givenText) {
     synth.cancel();
     setText(givenText);
     synth.speak(screenReader);
+    // This is used to call a function once it's finished
+    return screenReader;
 }
 
 // Stops screen reader

@@ -50,7 +50,6 @@ document.addEventListener("keydown", (event) => {
             keyWasHeld = true;
         }
     }
-
     if (event.key === "Control") {
         if (screenReaderActive) {
             stopScreenreader();
