@@ -8,7 +8,7 @@ It relies on several functions/classes from other files
 */
 
 console.log("Content.js Script injected into tab");
-
+const mine = sendMessageToWorker({ message: "Hey man" });
 // Summarized Content
 let summarizedContent = "";
 
@@ -18,16 +18,20 @@ let timesControlPressed = 0;
 // Boolean tells if screen reader is active or not
 let screenReaderActive = false;
 
-// Checks if key is currently being pressed
-let keyBeingPressed = false;
-
 // To Handle AI Agent audio input functionality
 let startTime;
-let recordingStartTime;
 let keyWasHeld = false;
 
 /* Summarizes the webpage in the background so the user doesn't have to
 wait too long for the summary */
+
+async function sendMessageToWorker(msg) {
+    const response = await chrome.runtime.sendMessage({
+        message: msg,
+    });
+
+    return response;
+}
 
 summarizeContent().then((result) => {
     summarizedContent = result;
@@ -74,4 +78,8 @@ document.addEventListener("keydown", (event) => {
     }
 
     console.log(timesControlPressed, screenReaderActive, event.key); // Debugging
+});
+
+document.addEventListener("click", () => {
+    console.log(mine);
 });

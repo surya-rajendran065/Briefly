@@ -6,8 +6,6 @@ by going to another server and getting the summarization
 
 */
 
-console.log("Summarize.js Script injected into tab");
-
 // Summarizes the content of a webpage
 async function summarizeContent() {
     // Fetch from server
