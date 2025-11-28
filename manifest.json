@@ -1,36 +1,46 @@
 {
-  "name": "Summary Master Extension",
-  "description": "This is an extension used to summarize webpages for visually impaired",
-  "version": "1.0",
-  "manifest_version": 3,
-  "background": {
-    "service_worker": "scripts/service-worker.js",
-    "type": "module"
-  },
-  "permissions": ["activeTab", "scripting", "tts", "tabs"],
-  "host_permissions": ["https://summarizer-api-seven.vercel.app/*"],
-  "commands": {
-    "summarize-page": {
-      "suggested_key": {
-        "default": "Ctrl+B",
-        "mac": "Command+B"
-      },
-      "description": "Summarize the current webpage"
+    "name": "Summary Master Extension",
+    "description": "This is an extension used to summarize webpages for visually impaired",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "scripts/service-worker.js",
+        "type": "module"
+    },
+    "permissions": ["activeTab", "scripting", "audiocapture", "tabs"],
+    "host_permissions": [
+        "https://*/"
+    ],
+    "commands": {
+        "summarize-page": {
+            "suggested_key": {
+                "default": "Ctrl+B",
+                "mac": "Command+B"
+            },
+            "description": "Summarize the current webpage"
+        }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["audio/*"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "content_scripts": [
+        {
+            "js": [
+                "scripts/classes/timeOutHandler.js",
+                "scripts/screenReader.js",
+                "scripts/audio.js",
+                "scripts/agent.js",
+                "scripts/requestServer.js",
+                "scripts/content.js",
+                "scripts/agentFunctions.js"
+            ],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "action": {
+      "default_popup": "index.html"
     }
-  },
-  "content_scripts" : [
-    {
-      "js" : 
-      [
-      "scripts/screenReader.js",
-      "scripts/summarize.js", 
-      "scripts/content.js",
-      "scripts/agentFunctions.js"
-      ],
-      "matches" : ["<all_urls>"]
-    }
-  ],
-  "action": {
-    "default_popup": "index.html"
-  }
 }

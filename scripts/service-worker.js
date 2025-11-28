@@ -1,60 +1,14 @@
 // Listents to keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
-    let summarizedContent = "Hello there!";
-
     // When user presses Ctrl+B
+    let tab = await getCurrentTab();
     if (command === "summarize-page") {
-        // Summarized content created from AI
-
-        // Fetches summarization from server
-        async function summarizeContent() {
-            const response = await fetch(
-                "https://summary-chrome-extension-backend.onrender.com/",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(document.body.innerText),
-                }
-            );
-
-            const data = await response.json();
-
-            summarizedContent = data.summary;
-            console.log(data.summary);
-            return data.summary;
-        }
-
-        let tab = await getCurrentTab();
-
-        summarizeContent();
-
-        // getCnt.then((result) => {
-        //     chrome.scripting.executeScript({
-        //     target: {tabId: tab.id},
-        //     func: () => {console.log(result)}
-        //     })
-        // })
-
         // Prints message alerting that Ctrl+B has been pressed
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: () => {
                 console.log("Pressed Ctrl+B");
             },
-        });
-
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: summarizeContent,
-        });
-
-        // Executes text-to-speech function
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: textToSpeech,
-            args: ["Hello World"],
         });
     }
 });
@@ -82,12 +36,48 @@ async function getCurrentTab() {
     return tabs[0];
 }
 
-// Converts given text to speech
-function textToSpeech(givenText) {
-    const utterance = new SpeechSynthesisUtterance(givenText);
-    window.speechSynthesis.speak(utterance);
+// Logs a message within the console of the active tab
+async function logMsg(msg) {
+    let tab = await getCurrentTab();
+
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+            console.log(msg);
+        },
+    });
 }
 
+/* Executes a function in the current tab and returns 'true'
+if no errors were present
+*/
+async function executeOnTab(callBack) {
+    let tab = await getCurrentTab();
+    let status = "Success";
+
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: callBack,
+    });
+
+    return status;
+}
+
+// For testing executeOnTab
+function hi() {
+    console.log("Hello World!");
+}
+
+// Handles messages from content.js
+function handleMessage(message, sender, sendResponse) {
+    executeOnTab(logMsg("")).then((result) => {
+        sendResponse({ message: result });
+    });
+    return true;
+}
+
+// Adds event listener
+chrome.runtime.onMessage.addListener(handleMessage);
 // List Current Tabs
 async function listTabs() {
     let tabs = await chrome.tabs.query({});
