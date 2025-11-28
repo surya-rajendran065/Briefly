@@ -34,7 +34,7 @@
                 "scripts/screenReader.js",
                 "scripts/audio.js",
                 "scripts/agent.js",
-                "scripts/summarize.js",
+                "scripts/requestServer.js",
                 "scripts/content.js"
             ],
             "matches": ["<all_urls>"]
