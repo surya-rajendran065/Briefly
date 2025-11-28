@@ -13,6 +13,22 @@ chrome.commands.onCommand.addListener(async (command) => {
     }
 });
 
+function handleMessage(request, sender, sendResponse) {
+    listTabs().then((tabs) => {
+        let tabArray = []
+        tabs = tabs.map((tab) => {
+            tabArray.push(tab.title);
+            return tab.title;
+        })
+        tabArray = tabArray.join("\n");
+        sendResponse({ tabs: tabArray });
+    })
+    return true;
+}
+     
+
+chrome.runtime.onMessage.addListener(handleMessage);
+
 // Gets the current tab
 async function getCurrentTab() {
     const queryOptions = { active: true, currentWindow: true };
@@ -62,3 +78,8 @@ function handleMessage(message, sender, sendResponse) {
 
 // Adds event listener
 chrome.runtime.onMessage.addListener(handleMessage);
+// List Current Tabs
+async function listTabs() {
+    let tabs = await chrome.tabs.query({});
+    return tabs;
+}

@@ -9,7 +9,6 @@
     },
     "permissions": ["activeTab", "scripting", "audiocapture", "tabs"],
     "host_permissions": [
-        "https://summarizer-api-seven.vercel.app/*",
         "https://*/"
     ],
     "commands": {
@@ -35,9 +34,13 @@
                 "scripts/audio.js",
                 "scripts/agent.js",
                 "scripts/requestServer.js",
-                "scripts/content.js"
+                "scripts/content.js",
+                "scripts/agentFunctions.js"
             ],
             "matches": ["<all_urls>"]
         }
-    ]
+    ],
+    "action": {
+      "default_popup": "index.html"
+    }
 }
