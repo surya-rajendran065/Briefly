@@ -13,21 +13,18 @@ chrome.commands.onCommand.addListener(async (command) => {
     }
 });
 
-function handleMessage(request, sender, sendResponse) {
-    listTabs().then((tabs) => {
-        let tabArray = []
-        tabs = tabs.map((tab) => {
-            tabArray.push(tab.title);
-            return tab.title;
-        })
-        tabArray = tabArray.join("\n");
-        sendResponse({ tabs: tabArray });
-    })
-    return true;
-}
-     
+/**
+ * Agent Functions
+ * These are functions that are needed when the content scripts cannot perform
+ * a certain browser operation. They will send a message to the service
+ * worker telling it to execute the specified function
+ */
 
-chrome.runtime.onMessage.addListener(handleMessage);
+// List Current Tabs
+async function listTabs() {
+    let tabs = await chrome.tabs.query({});
+    return tabs;
+}
 
 // Gets the current tab
 async function getCurrentTab() {
@@ -51,35 +48,30 @@ async function logMsg(msg) {
 /* Executes a function in the current tab and returns 'true'
 if no errors were present
 */
-async function executeOnTab(callBack) {
+async function executeOnTab(callBack, arg = "Hi") {
     let tab = await getCurrentTab();
     let status = "Success";
 
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: callBack,
+        args: [arg],
     });
 
     return status;
 }
 
-// For testing executeOnTab
-function hi() {
-    console.log("Hello World!");
-}
-
 // Handles messages from content.js
 function handleMessage(message, sender, sendResponse) {
-    executeOnTab(logMsg("")).then((result) => {
-        sendResponse({ message: result });
-    });
+    executeOnTab(logMsg, "Hi")
+        .then((result) => {
+            sendResponse({ message: result });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     return true;
 }
 
 // Adds event listener
 chrome.runtime.onMessage.addListener(handleMessage);
-// List Current Tabs
-async function listTabs() {
-    let tabs = await chrome.tabs.query({});
-    return tabs;
-}

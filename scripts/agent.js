@@ -63,9 +63,6 @@ function formattedSentences() {
  * done speaking
  */
 recogniton.addEventListener("result", (event) => {
-    if (finalResult != undefined) {
-        timeHandler.clearTime("finalResult");
-    }
     speechToTextResult = event.results;
 
     clearTimeout(noResponse);

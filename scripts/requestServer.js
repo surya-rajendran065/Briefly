@@ -47,10 +47,24 @@ async function summarizeContent() {
 }
 
 async function callAgent(sentences) {
+    // API Endpoint
     const endpoint =
         "https://summary-chrome-extension-backend.onrender.com/agent-call";
+
     //const response = await serverFetch(endpoint, { input: sentences });
 
     // It returns an array so we must specify [0] to get the first object
-    const json_response = JSON.parse(mine)[0];
+    const json_response = JSON.parse(response.response)[0];
+
+    const func = json_response.function;
+
+    const service_worker_funcs = ["listTabs()"];
+
+    if (service_worker_funcs.includes(func)) {
+        // Send a message to the service worker
+        console.log("Service-worker function");
+    } else if (func != "false") {
+        eval(mine_obj.function);
+        textToSpeech(json_response.agentResponse);
+    }
 }
