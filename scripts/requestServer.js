@@ -20,6 +20,15 @@ async function serverFetch(endpoint, json_obj) {
     return data;
 }
 
+/**
+ * Sends a message to the service-worker
+ */
+async function sendMessageToWorker(msg) {
+    const response = await chrome.runtime.sendMessage(msg);
+
+    return response;
+}
+
 // Summarizes the content of a webpage
 async function summarizeContent() {
     // Endpoint 1 - Weak extractive summarization to avoid rate limits
@@ -35,8 +44,6 @@ async function summarizeContent() {
         input: document.body.innerText,
     });
 
-    // Response
-
     // data.summary is the summary
     summarizedContent = response.summary;
 
@@ -51,20 +58,24 @@ async function callAgent(sentences) {
     const endpoint =
         "https://summary-chrome-extension-backend.onrender.com/agent-call";
 
-    //const response = await serverFetch(endpoint, { input: sentences });
+    const response = await serverFetch(endpoint, { input: sentences });
 
     // It returns an array so we must specify [0] to get the first object
     const json_response = JSON.parse(response.response)[0];
 
-    const func = json_response.function;
+    const idx = json_response.index;
+    const args = json_response.arguments;
 
-    const service_worker_funcs = ["listTabs()"];
+    textToSpeech(json_response.agentResponse);
+    if (idx > -1) {
+        const functions = [navigateTo, openUrl, listTabs];
 
-    if (service_worker_funcs.includes(func)) {
-        // Send a message to the service worker
-        console.log("Service-worker function");
-    } else if (func != "false") {
-        eval(mine_obj.function);
-        textToSpeech(json_response.agentResponse);
+        if (idx === 0 || idx === 1) {
+            functions[idx](args.arg1);
+        } else {
+            functions[idx]();
+        }
+    } else {
+        console.log("\n*** Function not needed ***\n");
     }
 }

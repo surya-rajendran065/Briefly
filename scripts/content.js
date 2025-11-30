@@ -24,14 +24,6 @@ let keyWasHeld = false;
 /* Summarizes the webpage in the background so the user doesn't have to
 wait too long for the summary */
 
-async function sendMessageToWorker(msg) {
-    const response = await chrome.runtime.sendMessage({
-        message: msg,
-    });
-
-    return response;
-}
-
 summarizeContent().then((result) => {
     summarizedContent = result;
 });
@@ -53,6 +45,11 @@ document.addEventListener("keydown", (event) => {
             keyWasHeld = true;
         }
     }
+
+    if (event.key === "Escape") {
+        stopAIAgent();
+    }
+
     if (event.key === "Control") {
         if (screenReaderActive) {
             stopScreenreader();

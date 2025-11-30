@@ -1,6 +1,11 @@
 // Sound effects
-const startEffect = new Audio(chrome.runtime.getURL("audio/Start.mp3"));
-const stopEffect = new Audio(chrome.runtime.getURL("audio/Stop.mp3"));
+const startEffect = createAudio("audio/Start.mp3");
+const stopEffect = createAudio("audio/Stop.mp3");
+
+// Creates a qualified URL for a .mp3 file
+function createAudio(fileName) {
+    return new Audio(chrome.runtime.getURL(fileName));
+}
 
 // Waits for a sepcified amount of time
 async function Sleep(ms) {

@@ -1,8 +1,7 @@
-
 console.log("Agent Functions script loaded");
 
 function openUrl(url) {
-    window.open(url,"_self")
+    window.open(url, "_self");
 }
 
 function navigateTo(url) {
@@ -10,22 +9,24 @@ function navigateTo(url) {
 }
 
 async function listTabs() {
-    const tabs = await chrome.runtime.sendMessage({ message: "listTabs" });
-    console.log(tabs.tabs);
+    const tabs = await chrome.runtime.sendMessage({ func_message: "listTabs" });
+    let tabTitles = [];
 
+    for (let i = 0; i < tabs.tabs.length; i++) {
+        tabTitles.push(tabs.tabs[i].title);
+    }
 }
 
-
 document.addEventListener("keydown", async (event) => {
-    if (event.ctrlKey && event.shiftKey &&  event.key.toLowerCase() === "k") {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "k") {
         openUrl("https://www.example.com");
     }
 
-    if (event.ctrlKey && event.shiftKey &&  event.key.toLowerCase() === "h") {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "h") {
         navigateTo("https://www.example.com");
     }
-    
-    if (event.ctrlKey && event.shiftKey &&  event.key.toLowerCase() === "e") {
+
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "e") {
         await listTabs();
     }
-})
+});
