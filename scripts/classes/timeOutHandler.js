@@ -22,7 +22,11 @@ class TimeOutHandler {
 
     // Clears a specified timeout
     clearTime(name) {
-        this.clearTimeOut(this.timeOuts[name]);
+        if (this.checkName(name)) {
+            clearTimeout(this.timeOuts[name]);
+        } else {
+            return "Name doesn't exist";
+        }
     }
 
     // Clears all the timeouts
@@ -30,5 +34,10 @@ class TimeOutHandler {
         for (let key in this.timeOuts) {
             clearTimeout(this.timeOuts[key]);
         }
+    }
+
+    // Checks if the name actually exists in timeOuts
+    checkName(name) {
+        return name in this.timeOuts;
     }
 }

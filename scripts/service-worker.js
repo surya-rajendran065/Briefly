@@ -26,6 +26,10 @@ async function listTabs() {
     return tabs;
 }
 
+/**
+ * End of Agent Function
+ */
+
 // Gets the current tab
 async function getCurrentTab() {
     const queryOptions = { active: true, currentWindow: true };
@@ -39,37 +43,40 @@ async function logMsg(msg) {
 
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: () => {
+        func: (msg) => {
             console.log(msg);
         },
+        args: [msg],
     });
 }
 
 /* Executes a function in the current tab and returns 'true'
 if no errors were present
 */
-async function executeOnTab(callBack, arg = "Hi") {
+async function executeOnTab(callBack) {
     let tab = await getCurrentTab();
     let status = "Success";
 
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: callBack,
-        args: [arg],
+        func: (callBack) => {
+            callBack;
+        },
+        args: [callBack],
     });
 
     return status;
 }
 
-// Handles messages from content.js
+// Handles messages from content scripts
 function handleMessage(message, sender, sendResponse) {
-    executeOnTab(logMsg, "Hi")
-        .then((result) => {
-            sendResponse({ message: result });
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+    if ("func_message" in message) {
+        if (message.func_message === "listTabs") {
+            listTabs().then((result) => sendResponse({ tabs: result }));
+        }
+    } else {
+        sendResponse({ response: "Not a function message" });
+    }
     return true;
 }
 
