@@ -103,6 +103,10 @@ document.addEventListener("keydown", (event) => {
                 }, 1500);
             }
         }
+
+        if (agentOn) {
+            continueAgentConversation();
+        }
     }
 
     if (timesControlPressed === 3) {
