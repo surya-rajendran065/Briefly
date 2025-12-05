@@ -13,6 +13,7 @@ const summaryModes = ["Medium", "Short", "Two-Sentence", "Long"];
 
 // Summarized Content
 let summarizedContent = "";
+let loadContent;
 
 // Checks how many times user pressed Control
 let timesControlPressed = 0;
@@ -40,15 +41,15 @@ async function createSummary() {
 
 // Plays summary with short indicator
 async function playSummary() {
-    if (summarizedContent === "") {
-        await createSummary();
-    }
     playStartEffect();
     await Sleep(500);
     textToSpeech("Starting Summary");
     await Sleep(1500);
+
     if (screenReaderActive) {
-        textToSpeech(summarizedContent);
+        loadContent.then(() => {
+            textToSpeech(summarizedContent);
+        });
     }
 }
 
@@ -112,6 +113,11 @@ document.addEventListener("keydown", (event) => {
     if (timesControlPressed === 3) {
         if (!screenReaderActive) {
             screenReaderActive = true;
+
+            /* Create summary is called early to have it be ready sooner */
+
+            loadContent = createSummary();
+
             playSummary();
         }
     }

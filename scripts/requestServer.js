@@ -33,6 +33,12 @@ async function sendMessageToWorker(msg) {
 of the webpage's content that a user is currently on.
 */
 async function summarizeContent(summaryMode) {
+    /*
+    
+    Use endpoint 2 when in showcase
+
+    */
+
     // Endpoint 1 - Weak extractive summarization to avoid rate limits
     const endpoint1 =
         "https://summary-chrome-extension-backend.onrender.com/simple-sum";
