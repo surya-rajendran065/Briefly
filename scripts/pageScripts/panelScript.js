@@ -9,6 +9,29 @@ const recogniton = createRecognition();
 let agentStartMessage = `Hello, I'm Rosie, your AI Agent. I will answer
 your questions and requests! press escape to stop talking`;
 
+// Handles messages from content scripts
+function handleMessage(message, sender, sendResponse) {
+    const data = message.data;
+    if (message.target === "sidePanel") {
+        // Closes side panel
+        if (data.purpose === "closeSidePanel") {
+            window.close();
+        }
+
+        // Starts AI Agent conversation
+        if (data.purpose === "startAgent") {
+            console.log("Starting...");
+            startAIAgent();
+        }
+
+        // Stops AI Agent conversation
+        if (data.purpose === "stopAgent") {
+            console.log("Stopping...");
+            stopAIAgent();
+        }
+    }
+}
+
 // Creates a SpeechRecogniton Object
 function createRecognition() {
     const rec = new window.SpeechRecognition();
@@ -103,3 +126,7 @@ recogniton.addEventListener("speechstart", () => {
 recogniton.addEventListener("speechend", () => {
     console.log("Finished speaking :)");
 });
+
+// Adds event listener
+chrome.runtime.onMessage.addListener(handleMessage);
+console.log(recogniton);

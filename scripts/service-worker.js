@@ -1,17 +1,26 @@
-// Listents to keyboard commands
+// Listens to keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
     // When user presses Ctrl+B
-    let tab = await getCurrentTab();
     if (command === "summarize-page") {
         // Prints message alerting that Ctrl+B has been pressed
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: () => {
-                console.log("Pressed Ctrl+B");
-            },
-        });
+        logMsg("Pressed Ctrl + B");
+        workerMessanger("sidePanel", { purpose: "start" });
     }
 });
+
+// This function is used to send messages and is only used within this scripts
+async function workerMessanger(target, data) {
+    if (target === "offScreen") {
+        await setUpOffScreen();
+    }
+
+    const response = await chrome.runtime.sendMessage({
+        target: target,
+        data: data,
+    });
+
+    return response;
+}
 
 /**
  * Agent Functions
@@ -29,6 +38,42 @@ async function listTabs() {
 /**
  * End of Agent Function
  */
+
+/**
+ * Sends a message to target
+ */
+
+// Creates an offscreen document with specified path
+async function createOffScreenDoc(path) {
+    const just = `The extension needs 
+    audio from the user's microphone so 
+    it can interact with an AI Agent, 
+    that can answer their questions and perform browser operations`;
+
+    await chrome.offscreen.createDocument({
+        url: path,
+        reasons: ["USER_MEDIA", "BLOBS"],
+        justification: just,
+    });
+}
+
+// Creats an offscreen document if it already doesn't exist
+async function setUpOffScreen() {
+    const path = "pages/audioRetriever.html";
+
+    let docURL = chrome.runtime.getURL(path);
+
+    const existingContexts = await chrome.runtime.getContexts({
+        contextTypes: ["OFFSCREEN_DOCUMENT"],
+        documentUrls: [docURL],
+    });
+
+    if (existingContexts.length > 0) {
+        return;
+    }
+
+    await createOffScreenDoc(path);
+}
 
 // Gets the current tab
 async function getCurrentTab() {
@@ -59,24 +104,39 @@ async function executeOnTab(callBack) {
 
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (callBack) => {
-            callBack;
-        },
-        args: [callBack],
+        func: callBack,
     });
 
     return status;
 }
 
+// Opens side panel globally across windows
+function openPanel() {
+    chrome.windows.getCurrent((window) => {
+        chrome.sidePanel.open({ windowId: window.id });
+    });
+}
+
 // Handles messages from content scripts
 function handleMessage(message, sender, sendResponse) {
-    if ("func_message" in message) {
-        if (message.func_message === "listTabs") {
-            listTabs().then((result) => sendResponse({ tabs: result }));
+    if (message.target === "service-worker") {
+        const data = message.data;
+
+        if ("func_message" in data) {
+            if (data.func_message === "listTabs") {
+                listTabs().then((result) => sendResponse({ tabs: result }));
+            }
+        } else {
+            sendResponse({ response: "Not a function message" });
         }
-    } else {
-        sendResponse({ response: "Not a function message" });
+
+        if ("purpose" in data) {
+            if (data.purpose === "openSidePanel") {
+                openPanel();
+            }
+        }
     }
+
     return true;
 }
 

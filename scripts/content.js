@@ -15,6 +15,9 @@ const summaryModes = ["Medium", "Short", "Two-Sentence", "Long"];
 let summarizedContent = "";
 let loadContent;
 
+// State of the panel
+let panelOpen = false;
+
 // Checks how many times user pressed Control
 let timesControlPressed = 0;
 
@@ -66,6 +69,15 @@ document.addEventListener("keyup", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.shiftKey) {
+        panelOpen = !panelOpen;
+        if (panelOpen) {
+            sendMessage("service-worker", { purpose: "openSidePanel" });
+        } else {
+            sendMessage("sidePanel", { purpose: "startAgent" });
+        }
+    }
+
     // Checks if user holds down F2 for atleast 1 second to trigger Agent
     if (event.key === "F2") {
         if (!keyWasHeld) {

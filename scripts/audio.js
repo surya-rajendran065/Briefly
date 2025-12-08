@@ -7,11 +7,6 @@ function createAudio(fileName) {
     return new Audio(chrome.runtime.getURL(fileName));
 }
 
-// Waits for a sepcified amount of time
-async function Sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 // Sound effect to indicate AI Agent has started listening
 function playStartEffect() {
     startEffect.play();

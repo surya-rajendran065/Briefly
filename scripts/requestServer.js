@@ -20,15 +20,6 @@ async function serverFetch(endpoint, json_obj) {
     return data;
 }
 
-/**
- * Sends a message to the service-worker
- */
-async function sendMessageToWorker(msg) {
-    const response = await chrome.runtime.sendMessage(msg);
-
-    return response;
-}
-
 /* Makes a call to the Python server which sends back a summary
 of the webpage's content that a user is currently on.
 */

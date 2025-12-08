@@ -7,7 +7,14 @@
         "service_worker": "scripts/service-worker.js",
         "type": "module"
     },
-    "permissions": ["activeTab", "scripting", "audioCapture", "tabs"],
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "audioCapture",
+        "tabs",
+        "offscreen",
+        "sidePanel"
+    ],
     "host_permissions": ["https://*/"],
     "commands": {
         "summarize-page": {
@@ -27,6 +34,7 @@
     "content_scripts": [
         {
             "js": [
+                "scripts/utils.js",
                 "scripts/classes/timeOutHandler.js",
                 "scripts/screenReader.js",
                 "scripts/audio.js",
@@ -40,5 +48,8 @@
     ],
     "action": {
         "default_popup": "index.html"
+    },
+    "side_panel": {
+        "default_path": "pages/sidePanel.html"
     }
 }
