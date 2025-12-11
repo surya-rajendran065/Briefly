@@ -15,9 +15,6 @@ const summaryModes = ["Medium", "Short", "Two-Sentence", "Long"];
 let summarizedContent = "";
 let loadContent;
 
-// State of the panel
-let panelOpen = false;
-
 // State of extension
 let extensionActive;
 
@@ -73,17 +70,39 @@ document.addEventListener("keyup", () => {
     }
 });
 
+// Retrieves session data with key 'extensionActive'
+async function getExtensionActive() {
+    let active = await chrome.storage.session.get("extensionActive");
+    return active;
+}
+
+// Changes session data of 'extensionActive'
+async function setActive(state, ttsMsg) {
+    textToSpeech(ttsMsg);
+    extensionActive = undefined;
+
+    chrome.storage.session.set({ extensionActive: state });
+}
+
+// Sets the state of 'extensionActive' when user opens new URL
+getExtensionActive().then((result) => {
+    extensionActive = result.extensionActive;
+});
+
 document.addEventListener("keydown", (event) => {
     if (event.ctrlKey && event.shiftKey) {
-        console.log(extensionActive);
         if (!extensionActive) {
+            setActive(!extensionActive, "Activated");
             sendMessage("service-worker", { purpose: "openSidePanel" });
         } else if (extensionActive) {
+            setActive(!extensionActive, "Deactivated");
             sendMessage("sidePanel", { purpose: "closeSidePanel" });
         }
     }
 
-    console.log(extensionActive);
+    // Debugging
+    console.log(`Extension Active: ${extensionActive}`);
+
     if (extensionActive) {
         // Checks if user holds down F2 for atleast 1 second to trigger Agent
         if (event.key === "F2") {
@@ -145,11 +164,24 @@ document.addEventListener("keydown", (event) => {
     console.log(timesControlPressed, screenReaderActive, event.key); // Debugging
 });
 
+/** User gesture is required for extension to play audio or
+ * open side panel
+ */
 let gesture = false;
 
 document.addEventListener("click", () => {
     if (!gesture) {
-        //textToSpeech("Thank you for using Blind Time!");
         gesture = true;
+    }
+});
+
+/* This code ensures that all content scripts update the state of
+'extensionActive' to avoid bugs */
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if (key === "extensionActive") {
+            extensionActive = newValue;
+            console.log(`Extension active set to `, extensionActive);
+        }
     }
 });

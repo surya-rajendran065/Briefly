@@ -77,9 +77,10 @@ async function setUpOffScreen() {
 // Creates session data
 function createSessionData() {
     chrome.storage.session.set({ extensionActive: false }).then(() => {
-        console.log("Value was set");
+        console.log("Value was set"); // Debugging
     });
 
+    // Allows other parts of the extension to access session data
     chrome.storage.session.setAccessLevel({
         accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS",
     });
