@@ -14,7 +14,7 @@ the summary for the blind user to listen to
 
 ### **Note** These instructions may not be finished
 
-1. Download the extension as a **.zip** file at [Github](https://github.com/surya-rajendran065/Summarizer-Chrome-Extension)
+1. Download the extension as a **.zip** file at [Github](https://github.com/surya-rajendran065/Briefly)
 
     ![Alt text](resources/step%201.png "First step")
 2. Find the location of the .zip file, right click on it and select **Extract all**
