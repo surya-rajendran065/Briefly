@@ -1,8 +1,5 @@
 /* 
-Logging strings to check their value can be difficult
-if they contain trailing whitespace or are empty strings.
-This log prints them wrapped around parantheses to tackle
-this issue.
+This file includes functions that several files may rely on
 */
 function wrp(msg, val) {
     console.log(`${msg} (${val})`);

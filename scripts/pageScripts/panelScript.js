@@ -131,6 +131,7 @@ function stopAIAgent() {
     recogniton.stop();
 }
 
+// Sets 'agentresponse' to a variable once the server returns a response
 async function getAgentResponse() {
     let response = await callAgent(formattedSentences());
     agentResponse = response;
@@ -158,7 +159,7 @@ async function afterSpeech() {
         await Sleep(3000);
     }
     textToSpeech(agentResponse);
-
+    agentResponse = "";
     screenReaderEnd(() => {
         recogniton.start();
         timeHandler.setTime("noResponse", stopAIAgent, 10);

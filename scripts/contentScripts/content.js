@@ -7,11 +7,11 @@ It relies on several functions/classes from other files
 
 */
 
-/* ========================= Variables ================================== */
-
 console.log("Content.js Script injected into tab");
 
-const summaryModes = ["Medium", "Short", "Two-Sentence", "Long"];
+/* ========================= Variables ================================== */
+
+const summaryLengths = ["Medium", "Short", "Two-Sentence", "Long"];
 // Summarized Content
 let summarizedContent = "";
 let loadContent;
@@ -41,7 +41,7 @@ let keyWasHeld = false;
  * and then sets summarizedContent
  *   to the response */
 async function createSummary() {
-    await summarizeContent(summaryModes[0]).then((result) => {
+    await summarizeContent(summaryLengths[0]).then((result) => {
         summarizedContent = result;
     });
 
@@ -70,7 +70,7 @@ async function playSummary() {
     loadContent.then(() => {
         if (screenReaderActive) {
             console.log("*** Summary ***");
-            console.log(`*** Mode: ${summaryModes[0]}\n\n ***`);
+            console.log(`*** Mode: ${summaryLengths[0]}\n\n ***`);
             textToSpeech(summarizedContent);
             summarizedContent = "";
             screenReaderEnd(() => {
@@ -82,7 +82,7 @@ async function playSummary() {
 
 /* ========> End of Summary functions <======== */
 
-/* ========> Session Data Functions <======== */
+/* ========> Functions <======== */
 
 function asyncVarValues() {
     // Sets the state of 'extensionActive' when user opens new URL
@@ -95,7 +95,7 @@ function asyncVarValues() {
     });
 }
 
-/* ========> End of Session Data Functions <======== */
+/* ========> Functions <======== */
 
 /* ========================= End of Functions ================================== */
 
@@ -170,11 +170,11 @@ document.addEventListener("keydown", (event) => {
         }
 
         if (event.key === "Shift" && allowShift) {
-            // Shifts the summaryModes array
-            summaryModes.unshift(summaryModes[summaryModes.length - 1]);
-            summaryModes.pop();
+            // Shifts the summaryLengths array
+            summaryLengths.unshift(summaryLengths[summaryLengths.length - 1]);
+            summaryLengths.pop();
 
-            textToSpeech(`Selected mode: ${summaryModes[0]}`);
+            textToSpeech(`Selected mode: ${summaryLengths[0]}`);
         }
 
         allowShift = true;
@@ -185,7 +185,6 @@ document.addEventListener("keydown", (event) => {
             if (screenReaderActive) {
                 stopScreenreader();
                 timesControlPressed = 0;
-                playStopEffect();
             } else {
                 timesControlPressed++;
 
@@ -230,9 +229,7 @@ document.addEventListener("keydown", (event) => {
 
 /* ========> End of Key Down <======== */
 
-/** User gesture is required for extension to play audio or
- * open side panel
- */
+/* ========================= Event Listeners ================================== */
 
 /* This code ensures that all content scripts update the state of
 'extensionActive' to avoid bugs */
@@ -252,4 +249,4 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
-/* ========================= Event Listeners ================================== */
+/* ========================= End of Event Listeners ================================== */

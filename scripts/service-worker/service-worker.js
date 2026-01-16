@@ -39,17 +39,6 @@ async function listTabs() {
  * End of Agent Function
  */
 
-// Creates session data
-function createSessionData() {
-    chrome.storage.session.set({ extensionActive: false }).then(() => {
-        console.log("Value was set for extensionActive"); // Debugging
-    });
-
-    chrome.storage.session.set({ agentActive: false }).then(() => {
-        console.log("Value was set for agentActive"); // Debugging
-    });
-}
-
 // Gets the current tab
 async function getCurrentTab() {
     const queryOptions = { active: true, currentWindow: true };
@@ -78,18 +67,6 @@ async function logMsg(msg) {
             console.log(msg);
         },
         args: [msg],
-    });
-}
-
-/* Executes a function in the current tab and returns 'true'
-if no errors were present
-*/
-async function executeOnTab(callBack) {
-    let tab = await getCurrentTab();
-
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: callBack,
     });
 }
 

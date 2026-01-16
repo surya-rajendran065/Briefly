@@ -1,8 +1,7 @@
 /*
 
-This javascript file is used to hold a async
-function that summarizes the content of a webpage
-by going to another server and getting the summarization
+This javascript file is used to make calls to Briefly's backend server
+to summarize webpages, and process user requests for the AI Agent.
 
 */
 
