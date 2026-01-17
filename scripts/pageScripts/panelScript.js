@@ -56,6 +56,7 @@ function handleMessage(message, sender, sendResponse) {
         }
 
         if (data.purpose === "interruptAgent") {
+            recogniton.stop();
             textToSpeech("Interrupted, now listening");
             screenReaderEnd(() => {
                 recogniton.start();
@@ -76,7 +77,7 @@ function setUpAgent() {
     if (!microphoneAccess) {
         textToSpeech(
             `You need to give Briefly access to use your microphone,
-                I will open a new tab for you with a button that you can click to give permission. Press your tab key once to get to the button. Once you press it, a prompt will ask you for permission. Use your down arrow key to navigate. Choose 'Allow when using site'`
+                I will open a new tab for you with a button that you can click to give permission. Press your tab key once to get to the button. Once you press it, a prompt will ask you for permission. Use your down arrow key to navigate. Choose 'Allow when using site'`,
         );
 
         screenReaderEnd(() => {
@@ -89,7 +90,7 @@ function setUpAgent() {
         startAIAgent();
     } else if (microphoneAccess === "denied") {
         textToSpeech(
-            "Uh oh! You've denied Briefly permission, was this a mistake?"
+            "Uh oh! You've denied Briefly permission, was this a mistake?",
         );
     }
 }

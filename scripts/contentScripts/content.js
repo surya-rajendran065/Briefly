@@ -12,6 +12,7 @@ console.log("Content.js Script injected into tab");
 /* ========================= Variables ================================== */
 
 const summaryLengths = ["Medium", "Short", "Two-Sentence", "Long"];
+const summaryTypes = ["general", "research", "paragraph", "learn"];
 // Summarized Content
 let summarizedContent = "";
 let loadContent;
@@ -35,15 +36,24 @@ let keyWasHeld = false;
 
 /* ======================== *** Functions *** =============================== */
 
+// Shifts an array
+function shiftArr(arr, msg) {
+    arr.unshift(arr[arr.length - 1]);
+    arr.pop();
+    textToSpeech(`${msg} ${arr[0]}`);
+}
+
 /* ========> Summary functions <======== */
 
 /* Waits for summarizeContent to be finished,
  * and then sets summarizedContent
  *   to the response */
 async function createSummary() {
-    await summarizeContent(summaryLengths[0]).then((result) => {
-        summarizedContent = result;
-    });
+    await summarizeContent(summaryLengths[0], summaryTypes[0]).then(
+        (result) => {
+            summarizedContent = result;
+        },
+    );
 
     return "Success";
 }
@@ -129,7 +139,7 @@ document.addEventListener("keydown", (event) => {
         on the page some where */
         allowShift = false;
 
-        if (navigator.userActivation.isActive) {
+        if (navigator.userActivation.hasBeenActive) {
             if (!extensionActive) {
                 setActive(true, "Activated");
                 sendMessage("service-worker", { purpose: "openSidePanel" });
@@ -140,7 +150,7 @@ document.addEventListener("keydown", (event) => {
             // With hasBeenActive, we may remove this portion of code later
             let activation = extensionActive ? "deactivate" : "activate";
             textToSpeech(
-                `We are terribbly sorry, you need to click the screen with your mouse once in order for Briefly to ${activation}`
+                `We are terribly sorry, you need to interact with the page with your mouse or keyboard once in order for Briefly to ${activation}`,
             );
             console.log(`***** Not activated *****`);
         }
@@ -154,7 +164,7 @@ document.addEventListener("keydown", (event) => {
     /* Extension Keyboard Commands */
     if (extensionActive) {
         /* F2 */
-        // Checks if user holds down F2 for atleast 1 second to trigger Agent
+        // Checks if user holds down F2 for at least 1 second to trigger Agent
         if (event.key === "F2") {
             if (!keyWasHeld) {
                 startTime = new Date().getSeconds();
@@ -171,10 +181,7 @@ document.addEventListener("keydown", (event) => {
 
         if (event.key === "Shift" && allowShift) {
             // Shifts the summaryLengths array
-            summaryLengths.unshift(summaryLengths[summaryLengths.length - 1]);
-            summaryLengths.pop();
-
-            textToSpeech(`Selected mode: ${summaryLengths[0]}`);
+            shiftArr(summaryLengths, "selected length:");
         }
 
         allowShift = true;
@@ -216,6 +223,10 @@ document.addEventListener("keydown", (event) => {
         /* CapsLock */
         // Pauses screenreader
         if (event.key === "CapsLock") {
+            if (!screenReaderActive) {
+                shiftArr(summaryTypes, "selected summary type: ");
+            }
+
             if (screenReaderActive) {
                 pauseScreenReader();
             } else if (agentOn) {

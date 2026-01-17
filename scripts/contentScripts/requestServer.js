@@ -34,7 +34,7 @@ async function serverFetch(endpoint, json_obj) {
 /* Makes a call to the Python server which sends back a summary
 of the webpage's content that a user is currently on.
 */
-async function summarizeContent(summaryMode) {
+async function summarizeContent(summaryLength, summaryType) {
     // Endpoint 1 - Weak extractive summarization to avoid rate limits
     const endpoint1 =
         "https://summary-chrome-extension-backend.vercel.app/simple-sum";
@@ -44,12 +44,13 @@ async function summarizeContent(summaryMode) {
         "https://summary-chrome-extension-backend.vercel.app/ai-sum";
 
     // Fetch from server
-    const response = await serverFetch(endpoint2, {
+    const response = await serverFetch(endpoint1, {
         input: document.body.innerText,
-        mode: summaryMode,
+        length: summaryLength,
+        sum_type: summaryType,
     }).catch((error) => {
         console.log(
-            `********\n\nError when fetching from server:\n${error.error}\n\n********`
+            `********\n\nError when fetching from server:\n${error.error}\n\n********`,
         );
         return error;
     });
@@ -82,10 +83,10 @@ async function callAgent(sentences) {
     const response = await serverFetch(endpoint2, { input: sentences }).catch(
         (error) => {
             console.log(
-                `********\n\nError when fetching from server:\n${error.error}\n\n********`
+                `********\n\nError when fetching from server:\n${error.error}\n\n********`,
             );
             return error;
-        }
+        },
     );
 
     console.log(response);

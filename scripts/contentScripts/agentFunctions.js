@@ -1,4 +1,3 @@
-console.log("Agent Functions script loaded");
 
 // Opens a url in the current tab
 function openUrl(url) {
