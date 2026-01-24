@@ -1,11 +1,14 @@
 /* 
-This file includes functions that several files may rely on
+This file includes functions / variables that several files may rely on
 */
+
+const globalHandler = new TimeOutHandler("F2Held");
+
 function wrp(msg, val) {
     console.log(`${msg} (${val})`);
 }
 
-// Waits for a sepcified amount of time
+// Waits for a specified amount of time
 async function Sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }

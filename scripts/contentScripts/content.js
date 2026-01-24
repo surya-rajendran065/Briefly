@@ -29,7 +29,6 @@ let agentOn = false;
 let allowShift = false;
 
 // To Handle AI Agent audio input functionality
-let startTime;
 let keyWasHeld = false;
 
 /* ========================= End of Variables ================================== */
@@ -106,7 +105,6 @@ function asyncVarValues() {
 }
 
 /* ========> Functions <======== */
-
 /* ========================= End of Functions ================================== */
 
 asyncVarValues();
@@ -115,17 +113,8 @@ asyncVarValues();
 
 /* ========> Key Up <======== */
 document.addEventListener("keyup", () => {
-    let timeHeld = new Date().getSeconds() - startTime;
+    globalHandler.clearTime("F2Held");
     keyWasHeld = false;
-    startTime = undefined;
-
-    if (timeHeld >= 1) {
-        sendMessage("sidePanel", {
-            purpose: "startAgent",
-        });
-
-        console.log("F2 was held for", timeHeld, "seconds");
-    }
 });
 
 /* ========> End of Key Up <======== */
@@ -167,9 +156,17 @@ document.addEventListener("keydown", (event) => {
         // Checks if user holds down F2 for at least 1 second to trigger Agent
         if (event.key === "F2") {
             if (!keyWasHeld) {
-                startTime = new Date().getSeconds();
-                keyWasHeld = true;
+                globalHandler.setTime(
+                    "F2Held",
+                    () => {
+                        sendMessage("sidePanel", {
+                            purpose: "startAgent",
+                        });
+                    },
+                    1,
+                );
             }
+            keyWasHeld = true;
         }
 
         /* Escape */
