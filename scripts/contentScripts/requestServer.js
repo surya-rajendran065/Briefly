@@ -44,7 +44,7 @@ async function summarizeContent(summaryLength, summaryType) {
         "https://summary-chrome-extension-backend.vercel.app/ai-sum";
 
     // Fetch from server
-    const response = await serverFetch(endpoint1, {
+    const response = await serverFetch(endpoint2, {
         input: document.body.innerText,
         length: summaryLength,
         sum_type: summaryType,
@@ -109,4 +109,11 @@ async function callAgent(sentences) {
     }
     // Return response from agent
     return json_response.agentResponse;
+}
+
+function agentResponse(json_response) {
+    const idx = json_response.index; // Function index
+    const args = json_response.arguments; // Arguments if function needs it
+    console.log("Index: ", idx);
+    console.log("Args: ", args);
 }
